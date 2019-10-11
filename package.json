@@ -1,0 +1,30 @@
+{
+  "name": "salesforce_data_generator",
+  "version": "0.0.1",
+  "description": "Generate data for loading into a Salesforce org",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --ignore-path .gitignore src",
+    "lint:fix": "eslint --fix --ignore-path .gitignore ."
+  },
+  "keywords": [
+    "Salesforce",
+    "JSForce"
+  ],
+  "author": "Aaron Crosman <acrosman@gmail.com> (https://spinningcode.org)",
+  "license": "MIT",
+  "dependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "inquirer": "^7.0.0",
+    "jsforce": "^1.9.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  }
+}
