@@ -34,12 +34,17 @@ function getObjectDetails(conn) {
   // Ask for a list of objects to generate data for.
   if (conn) {
     inquirer.prompt(objectQuestions).then((response) => {
-      const objList = response.objects.split(',');
+      const objList = response.objects.split(',').map((item) => {
+        return item.trim();
+      });
       for (let i = 0; i < objList.length; i += 1) {
-        // Check that each exists.
-        console.log(objList[i]);
-
         // Get the Description, and list the fields.
+        conn.describe(objList[i], (err, meta) => {
+          if (err) { return console.error(err); }
+          console.log(`Label : ${meta.label}`);
+          console.log(`Num of Fields : ${meta.fields.length}`);
+          return meta;
+        });
       }
     });
   }
