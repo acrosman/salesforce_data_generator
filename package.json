@@ -2,8 +2,10 @@
   "name": "salesforce_data_generator",
   "version": "0.0.1",
   "description": "Generate data for loading into a Salesforce org",
-  "main": "index.js",
+  "main": "getObjects.js",
   "scripts": {
+    "getObjects": "node getObjects.js",
+    "genSamples": "node generateSampleRecords.js",
     "lint": "eslint --ignore-path .gitignore src",
     "lint:fix": "eslint --fix --ignore-path .gitignore ."
   },

@@ -1,6 +1,7 @@
 const jsforce = require('jsforce');
 const inquirer = require('inquirer');
 const fs = require('fs');
+const path = require('path');
 
 // ================ Question Objects of Inquirer ===================
 // Questions to gather Username and password:
@@ -22,12 +23,12 @@ const loginInfoQuestions = [
   },
   {
     type: 'input',
-    name: 'outputFile',
-    message: 'Name of output file prefix.',
+    name: 'outputFileDir',
+    message: 'Name of output file directory.',
   },
 ];
 
-function getObjectDetails(conn, outputFile) {
+function getObjectDetails(conn, outputFileDir) {
   // Questions to get a list of objects to pull fields for.
   const objectQuestions = [
     {
@@ -53,7 +54,7 @@ function getObjectDetails(conn, outputFile) {
             console.log(`Label: ${meta.fields[j].label}, Name: ${meta.fields[j].name}, Type: ${meta.fields[j].type}`);
           }
 
-          const file = `${outputFile}_${meta.label}.json`;
+          const file = path.join(outputFileDir, `${meta.label}.json`);
           fs.writeFile(file, JSON.stringify(meta, null, 2), 'utf8', (e) => {
             if (e) {
               console.error('An error occured while writing JSON Object to File.');
@@ -82,7 +83,10 @@ function getObjectDetails(conn, outputFile) {
  * @param String outputFile
  *  Location to print output file.
  */
-function forceConnect(name, password, listAll, outputFile) {
+function forceConnect(name, password, listAll, outputFileDir) {
+  // Make sure the output directory exists.
+  fs.mkdirSync(outputFileDir);
+
   const conn = new jsforce.Connection();
   conn.login(name, password, (err, res) => {
     if (err) {
@@ -101,15 +105,15 @@ function forceConnect(name, password, listAll, outputFile) {
           console.log(result.sobjects[i].name);
         }
 
-        getObjectDetails(conn, outputFile);
+        getObjectDetails(conn, outputFileDir);
         return true;
       });
     }
-    getObjectDetails(conn,outputFile);
+    getObjectDetails(conn, outputFileDir);
     return true;
   });
 }
 
 inquirer.prompt(loginInfoQuestions).then((answers) => {
-  forceConnect(answers.name, answers.password, answers.allObjects, answers.outputFile);
+  forceConnect(answers.name, answers.password, answers.allObjects, answers.outputFileDir);
 });
