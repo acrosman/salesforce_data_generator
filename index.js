@@ -1,5 +1,6 @@
 const jsforce = require('jsforce');
 const inquirer = require('inquirer');
+const fs = require('fs');
 
 // ================ Question Objects of Inquirer ===================
 // Questions to gather Username and password:
@@ -19,9 +20,14 @@ const loginInfoQuestions = [
     name: 'allObjects',
     message: 'List all objects in this org?',
   },
+  {
+    type: 'input',
+    name: 'outputFile',
+    message: 'Name of output file prefix.',
+  },
 ];
 
-function getObjectDetails(conn) {
+function getObjectDetails(conn, outputFile) {
   // Questions to get a list of objects to pull fields for.
   const objectQuestions = [
     {
@@ -47,6 +53,17 @@ function getObjectDetails(conn) {
             console.log(`Label: ${meta.fields[j].label}, Name: ${meta.fields[j].name}, Type: ${meta.fields[j].type}`);
           }
 
+          const file = `${outputFile}_${meta.label}.json`;
+          fs.writeFile(file, JSON.stringify(meta, null, 2), 'utf8', (e) => {
+            if (e) {
+              console.error('An error occured while writing JSON Object to File.');
+              return console.error(err);
+            }
+
+            console.log(`JSON file has been saved: ${file}`);
+            return true;
+          });
+
           return meta;
         });
       }
@@ -62,8 +79,10 @@ function getObjectDetails(conn) {
  *  Password for connection.
  * @param Bool listAll
  *  List all objects in the org before asking which we care about.
+ * @param String outputFile
+ *  Location to print output file.
  */
-function forceConnect(name, password, listAll) {
+function forceConnect(name, password, listAll, outputFile) {
   const conn = new jsforce.Connection();
   conn.login(name, password, (err, res) => {
     if (err) {
@@ -82,15 +101,15 @@ function forceConnect(name, password, listAll) {
           console.log(result.sobjects[i].name);
         }
 
-        getObjectDetails(conn);
+        getObjectDetails(conn, outputFile);
         return true;
       });
     }
-    getObjectDetails(conn);
+    getObjectDetails(conn,outputFile);
     return true;
   });
 }
 
 inquirer.prompt(loginInfoQuestions).then((answers) => {
-  forceConnect(answers.name, answers.password, answers.allObjects);
+  forceConnect(answers.name, answers.password, answers.allObjects, answers.outputFile);
 });
