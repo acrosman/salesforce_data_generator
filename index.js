@@ -37,7 +37,7 @@ function getObjectDetails(conn) {
       const objList = response.objects.split(',');
       for (let i = 0; i < objList.length; i += 1) {
         // Check that each exists.
-        console.log(objList[i];
+        console.log(objList[i]);
 
         // Get the Description, and list the fields.
       }
