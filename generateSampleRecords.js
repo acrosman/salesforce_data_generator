@@ -1,4 +1,3 @@
-const jsforce = require('jsforce');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const path = require('path');
@@ -11,12 +10,25 @@ const loginInfoQuestions = [
     type: 'input',
     name: 'fieldMetaFileDir',
     message: 'Directory with field meta data files.',
+    default: './data',
   },
   {
     type: 'integer',
     name: 'objectCount',
     message: 'Number of objects to generate of each type.',
   },
+  {
+    type: 'input',
+    name: 'planOutputDir',
+    message: 'Directory for output of data plan files.',
+    default: './plan',
+  },
+  {
+    type: 'input',
+    name: 'planName',
+    message: 'Name of your import data plan.',
+    default: 'sample-data-plan',
+  }
 ];
 
 function generateSampleObject(objectName, fields) {
@@ -36,6 +48,8 @@ function generateSampleObject(objectName, fields) {
   for (let i = 0; i < fields.length; i += 1) {
     sObject[fields[i].name] = 'Something';
   }
+
+  console.log(sObject);
 
   return sObject;
 }
@@ -67,5 +81,11 @@ function loadFieldMetaData(directory) {
 }
 
 inquirer.prompt(loginInfoQuestions).then((answers) => {
+  // Make sure the output directory exists.
+  try {
+    fs.mkdirSync(answers.planOutputDir);
+  } catch() {
+
+  }
   loadFieldMetaData(answers.fieldMetaFileDir);
 });
